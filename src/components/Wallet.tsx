@@ -3,7 +3,7 @@ import { BiconomySmartAccount, BiconomySmartAccountConfig } from '@biconomy/acco
 import { ChainId } from '@biconomy/core-types'
 import SocialLogin from '@biconomy/web3-auth'
 import { ethers, providers } from 'ethers'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
 export default function Wallet() {
     const sdkRef = useRef<SocialLogin | null>(null)
@@ -90,4 +90,39 @@ export default function Wallet() {
             }, 1000)
         }
     }, [interval])
+
+    return (
+        <Fragment>
+            {/* Logout Button */}
+            <button
+                onClick={logout}
+                className='absolute right-0 m-3 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 px-4 py-2 font-medium transition-all hover:from-green-500 hover:to-blue-600'
+            >
+                Logout
+            </button>
+
+            <div className='m-auto flex h-screen flex-col items-center justify-center gap-10 bg-gray-950'>
+                <h1 className='text-4xl text-gray-50 font-bold tracking-tight lg:text-5xl'>
+                    Send ERC20 using ERC20
+                </h1>
+
+                {/* Login Button */}
+                {!smartAccount && !loading && (
+                    <button
+                        onClick={login}
+                        className='mt-10 rounded-lg bg-gradient-to-r from-green-400 to-blue-500 px-4 py-2 font-medium transition-colors hover:from-green-500 hover:to-blue-600'
+                    >
+                        Login
+                    </button>
+                )}
+
+                {/* Loading state */}
+                {loading && <p>Loading account details...</p>}
+
+                {smartAccount && (
+                    <Fragment>{/* Add Transfer Component Fere */}</Fragment>
+                )}
+            </div>
+        </Fragment>
+    )
 }
