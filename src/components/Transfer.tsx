@@ -7,4 +7,9 @@ export default function Transfer({
     smartAccount: BiconomySmartAccount
 }) {
     const [smartContractAddress, setSmartContractAddress] = useState('')
+
+    async function getSmartContractAddress() {
+        const _smartContractAddress = await smartAccount.getSmartAccountAddress()
+        setSmartContractAddress(_smartContractAddress)
+    }
 }
