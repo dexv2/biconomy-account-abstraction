@@ -1,3 +1,4 @@
+import { bundler, paymaster } from '@/utils/constants'
 import { BiconomySmartAccount, BiconomySmartAccountConfig } from '@biconomy/account'
 import { ChainId } from '@biconomy/core-types'
 import SocialLogin from '@biconomy/web3-auth'
@@ -29,7 +30,7 @@ export default function Wallet() {
         }
         else {
             console.log('logged in')
-            // setupSmartAccount()
+            setupSmartAccount()
         }
     }
 
@@ -68,12 +69,22 @@ export default function Wallet() {
         setLoading(false)
     }
 
+    async function logout() {
+        await sdkRef.current?.logout()
+
+        sdkRef.current?.hideWallet()
+
+        // Reset the state and stop the interval if it is started
+        setSmartAccount(undefined)
+        enableInterval(false)
+    }
+
     useEffect(() => {
         let configureLogin: NodeJS.Timeout | undefined
         if (interval) {
             configureLogin = setInterval(() => {
                 if (!!sdkRef.current?.provider) {
-                    // setupSmartAccount()
+                    setupSmartAccount()
                     clearInterval(configureLogin)
                 }
             }, 1000)
