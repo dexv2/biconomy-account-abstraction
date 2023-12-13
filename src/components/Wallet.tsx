@@ -4,6 +4,7 @@ import { ChainId } from '@biconomy/core-types'
 import SocialLogin from '@biconomy/web3-auth'
 import { ethers, providers } from 'ethers'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import Transfer from './Transfer'
 
 export default function Wallet() {
     const sdkRef = useRef<SocialLogin | null>(null)
@@ -120,7 +121,9 @@ export default function Wallet() {
                 {loading && <p>Loading account details...</p>}
 
                 {smartAccount && (
-                    <Fragment>{/* Add Transfer Component Fere */}</Fragment>
+                    <Fragment>
+                        <Transfer smartAccount={smartAccount} />
+                    </Fragment>
                 )}
             </div>
         </Fragment>
