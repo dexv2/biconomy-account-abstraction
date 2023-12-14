@@ -13,14 +13,41 @@ export default function Transfer({
     const [isLoading, setIsLoading] = useState(false)
     const [amount, setAmount] = useState(0)
     const [recipient, setRecipient] = useState('')
+    const [tokenBalance, setTokenBalance] = useState('0')
+
+    async function getTokenBalance(address: string) {
+        // Create an Ethers Contract instance for USDC
+        const readProvider = smartAccount.provider
+        const tokenContract = new ethers.Contract(
+            USDC_CONTRACT_ADDRESS,
+            ERC20ABI,
+            readProvider
+        )
+        const balance = await tokenContract.balanceOf(address)
+        const decimals = await tokenContract.decimals()
+        const amountInLowestUnit = ethers.utils.parseUnits(
+            balance.toString(),
+            18 - decimals
+        )
+        return ethers.utils.formatEther(amountInLowestUnit)
+    }
 
     async function getSmartContractAddress() {
+        console.log('getting details...')
         const _smartContractAddress = await smartAccount.getSmartAccountAddress()
         setSmartContractAddress(_smartContractAddress)
+        const balance = await getTokenBalance(_smartContractAddress)
+        setTokenBalance(balance)
     }
 
     useEffect(() => {
-        getSmartContractAddress()
+        let watchAccountChanges: NodeJS.Timeout | undefined
+        watchAccountChanges = setInterval(() => {
+            getSmartContractAddress()
+        }, 1000)
+        return () => {
+            clearInterval(watchAccountChanges)
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -128,7 +155,11 @@ export default function Transfer({
         <div>
             <p className="text-sm">
                 {' '}
-                Your smart account address is: {smartContractAddress}
+                Your smart account address is: <span className="text-md font-bold">{smartContractAddress}</span>
+            </p>
+            <p className="">
+                {' '}
+                <span className="text-sm">Your smart account balance is: </span><span className="text-md font-bold">{tokenBalance} USDC</span>
             </p>
             {isLoading ? (
                 <div>Loading...</div>
@@ -137,7 +168,7 @@ export default function Transfer({
                     <p>Transfer tokens from your account to another:</p>
                     <div className="mt-5 flex w-auto flex-col gap-2">
                         <input
-                            className=""
+                            className="rounded-xl border-2 p-1 text-gray-500"
                             type="text"
                             placeholder="Enter address"
                             onChange={(e) => setRecipient(e.target.value)}
